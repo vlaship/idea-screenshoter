@@ -1,19 +1,19 @@
 package one.util.ideaplugin.screenshoter;
 
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.ui.TextFieldWithHistoryWithBrowseButton;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.ui.SwingHelper;
-import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
-import javax.swing.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JTextField;
 import java.util.Arrays;
 
 /**
@@ -27,13 +27,11 @@ public class CopyImageConfigurable implements SearchableConfigurable, Configurab
         this.myProject = project;
     }
 
-    @Nls
     @Override
     public String getDisplayName() {
         return "Copy code as image";
     }
 
-    @NotNull
     @Override
     public String getId() {
         return "screenshoter";
@@ -55,19 +53,19 @@ public class CopyImageConfigurable implements SearchableConfigurable, Configurab
 
     @Override
     public boolean isModified() {
-        CopyImageOptionsProvider provider = myProject.getService(CopyImageOptionsProvider.class);
+        var provider = myProject.getService(CopyImageOptionsProvider.class);
         return !provider.getState().equals(myPanel.toState());
     }
 
     @Override
     public void apply() {
-        CopyImageOptionsProvider provider = myProject.getService(CopyImageOptionsProvider.class);
+        var provider = myProject.getService(CopyImageOptionsProvider.class);
         provider.loadState(myPanel.toState());
     }
 
     @Override
     public void reset() {
-        CopyImageOptionsProvider provider = myProject.getService(CopyImageOptionsProvider.class);
+        var provider = myProject.getService(CopyImageOptionsProvider.class);
         myPanel.fromState(provider.getState());
     }
 
@@ -86,11 +84,11 @@ public class CopyImageConfigurable implements SearchableConfigurable, Configurab
         private JSlider mySlider;
         private JPanel mySaveDirectoryPanel;
         private JTextField myPadding;
-        private TextFieldWithHistoryWithBrowseButton mySaveDirectory;
+        private TextFieldWithBrowseButton mySaveDirectory;
         private JComboBox<TransferableImage.Format> myFormat;
 
         CopyImageOptionsProvider.State toState() {
-            CopyImageOptionsProvider.State state = new CopyImageOptionsProvider.State();
+            var state = new CopyImageOptionsProvider.State();
             state.myChopIndentation = myChopIndentation.isSelected();
             state.myRemoveCaret = myRemoveCaret.isSelected();
             try {
@@ -124,11 +122,9 @@ public class CopyImageConfigurable implements SearchableConfigurable, Configurab
         }
 
         private void createUIComponents() {
-            FileChooserDescriptor singleFolderDescriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
-            TextFieldWithHistoryWithBrowseButton field = SwingHelper.createTextFieldWithHistoryWithBrowseButton(myProject,
-                "Save to Directory",
-                    singleFolderDescriptor,
-                    ContainerUtil::emptyList);
+            var singleFolderDescriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
+            var field = new TextFieldWithBrowseButton();
+            field.addBrowseFolderListener(myProject, singleFolderDescriptor);
             mySaveDirectoryPanel = field;
             mySaveDirectory = field;
         }

@@ -3,13 +3,12 @@ package one.util.ideaplugin.screenshoter;
 import com.intellij.ui.scale.JBUIScale;
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
-import org.jetbrains.annotations.NotNull;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -27,46 +26,57 @@ public abstract class TransferableImage<T> implements Transferable {
 
     public enum Format {
         PNG("png", DataFlavor.imageFlavor) {
-            TransferableImage<?> paint(JComponent contentComponent, AffineTransform at,
-                                       int width, int height, Color backgroundColor, int padding) {
-                double scale = JBUIScale.sysScale(contentComponent);
+            TransferableImage<?> paint(
+                    JComponent contentComponent,
+                    AffineTransform at,
+                    int width,
+                    int height,
+                    Color backgroundColor,
+                    int padding
+            ) {
+                var scale = JBUIScale.sysScale(contentComponent);
                 //noinspection UndesirableClassUsage
-                BufferedImage img = new BufferedImage((int) (width * scale + 2 * padding),
+                var img = new BufferedImage((int) (width * scale + 2 * padding),
                         (int) (height * scale + 2 * padding), BufferedImage.TYPE_INT_RGB);
-                Graphics2D g = (Graphics2D) img.getGraphics();
+                var g = (Graphics2D) img.getGraphics();
                 paint(g, contentComponent, at, width, height, backgroundColor, padding);
                 return new Png(img);
             }
         },
-        SVG("svg", svgDataFlavor(), DataFlavor.stringFlavor, DataFlavor.plainTextFlavor) {
+        SVG("svg", svgDataFlavor(), DataFlavor.stringFlavor, DataFlavor.getTextPlainUnicodeFlavor()) {
             TransferableImage<?> paint(JComponent contentComponent, AffineTransform at,
                                        int width, int height, Color backgroundColor, int padding) throws IOException {
-                DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
-                Document doc = domImpl.createDocument("http://www.w3.org/2000/svg", "svg", null);
-                SVGGraphics2D g = new SVGGraphics2D(doc);
-                double scale = JBUIScale.sysScale(contentComponent);
+                var domImpl = GenericDOMImplementation.getDOMImplementation();
+                var doc = domImpl.createDocument("http://www.w3.org/2000/svg", "svg", null);
+                var g = new SVGGraphics2D(doc);
+                var scale = JBUIScale.sysScale(contentComponent);
                 var size = new Dimension((int) (width * scale + 2 * padding), (int) (height * scale + 2 * padding));
                 g.setSVGCanvasSize(size);
                 paint(g, contentComponent, at, width, height, backgroundColor, padding);
-                CharArrayWriter writer = new CharArrayWriter();
+                var writer = new CharArrayWriter();
                 g.stream(writer, true);
                 return new Svg(writer.toString());
             }
         };
 
-        @NotNull
         private static DataFlavor svgDataFlavor() {
             return new DataFlavor(String.class, "image/svg+xml; charset=utf-8");
         }
 
-        static void paint(Graphics2D g,
-                          JComponent contentComponent, AffineTransform at,
-                          int width, int height, Color backgroundColor, int padding) {
-            double scale = JBUIScale.sysScale(contentComponent);
-            int scaledWidth = (int) (width * scale);
-            int scaledHeight = (int) (height * scale);
-            int imgWidth = scaledWidth + 2 * padding;
-            int imgHeight = scaledHeight + 2 * padding;
+        static void paint(
+                Graphics2D g,
+                JComponent contentComponent,
+                AffineTransform at,
+                int width,
+                int height,
+                Color backgroundColor,
+                int padding
+        ) {
+            var scale = JBUIScale.sysScale(contentComponent);
+            var scaledWidth = (int) (width * scale);
+            var scaledHeight = (int) (height * scale);
+            var imgWidth = scaledWidth + 2 * padding;
+            var imgHeight = scaledHeight + 2 * padding;
             g.setColor(backgroundColor);
             g.fillRect(0, 0, imgWidth, imgHeight);
             g.translate(padding, padding);
@@ -83,21 +93,24 @@ public abstract class TransferableImage<T> implements Transferable {
             this.flavors = flavors;
         }
 
-        abstract TransferableImage<?> paint(JComponent contentComponent, AffineTransform at,
-                                            int width, int height, Color backgroundColor, int padding) throws IOException;
+        abstract TransferableImage<?> paint(
+                JComponent contentComponent,
+                AffineTransform at,
+                                            int width,
+                int height,
+                Color backgroundColor,
+                int padding
+        ) throws IOException;
     }
 
-    @NotNull
     final Format format;
-    @NotNull
     final T transferee;
 
-    TransferableImage(@NotNull Format format, @NotNull T transferee) {
+    TransferableImage(Format format, T transferee) {
         this.format = format;
         this.transferee = transferee;
     }
 
-    @NotNull
     public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
         if (isDataFlavorSupported(flavor)) {
             return transferee;
@@ -131,10 +144,9 @@ public abstract class TransferableImage<T> implements Transferable {
             super(Format.SVG, image);
         }
 
-        @NotNull
         @Override
         public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
-            if (flavor.equals(DataFlavor.plainTextFlavor)) {
+            if (flavor.equals(DataFlavor.getTextPlainUnicodeFlavor())) {
                 return new StringReader(transferee);
             } else {
                 return super.getTransferData(flavor);
@@ -143,7 +155,7 @@ public abstract class TransferableImage<T> implements Transferable {
 
         @Override
         void write(OutputStream to) throws IOException {
-            try (OutputStreamWriter w = new OutputStreamWriter(to, StandardCharsets.UTF_8)) {
+            try (var w = new OutputStreamWriter(to, StandardCharsets.UTF_8)) {
                 w.write(transferee);
             }
         }

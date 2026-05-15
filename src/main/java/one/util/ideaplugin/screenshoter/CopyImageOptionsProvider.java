@@ -2,7 +2,6 @@ package one.util.ideaplugin.screenshoter;
 
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -16,20 +15,20 @@ import java.util.Objects;
         }
 )
 public class CopyImageOptionsProvider implements PersistentStateComponent<CopyImageOptionsProvider.State> {
+
     private final State myState = new State();
 
     static CopyImageOptionsProvider getInstance(Project project) {
         return project.getService(CopyImageOptionsProvider.class);
     }
 
-    @NotNull
     @Override
     public State getState() {
         return myState;
     }
 
     @Override
-    public void loadState(@NotNull State state) {
+    public void loadState(State state) {
         myState.myScale = state.myScale;
         myState.myRemoveCaret = state.myRemoveCaret;
         myState.myChopIndentation = state.myChopIndentation;
