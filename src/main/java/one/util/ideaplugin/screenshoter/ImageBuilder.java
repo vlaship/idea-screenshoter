@@ -1,22 +1,16 @@
 package one.util.ideaplugin.screenshoter;
 
-
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.editor.CaretModel;
-import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.Inlay;
-import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.editor.VisualPosition;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.ui.JBColor;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -27,45 +21,44 @@ import java.util.regex.Pattern;
 import static com.intellij.codeInsight.hint.EditorFragmentComponent.getBackgroundColor;
 
 class ImageBuilder {
+
     private static final Pattern EMPTY_SUFFIX = Pattern.compile("\n\\s+$");
 
-    @NotNull
     private final Editor editor;
-    @NotNull
     private final Project project;
 
-    ImageBuilder(@NotNull Editor editor) {
+    ImageBuilder(Editor editor) {
         this.editor = editor;
         this.project = Objects.requireNonNull(editor.getProject());
     }
 
     @Nullable
     TransferableImage<?> createImage() {
-        TextRange range = getRange(editor);
+        var range = getRange(editor);
 
-        Document document = editor.getDocument();
-        EditorState state = EditorState.from(editor);
+        var document = editor.getDocument();
+        var state = EditorState.from(editor);
         try {
             resetEditor();
-            CopyImageOptionsProvider.State options = CopyImageOptionsProvider.getInstance(project).getState();
-            double scale = options.myScale;
-            JComponent contentComponent = editor.getContentComponent();
-            Graphics2D contentGraphics = (Graphics2D) contentComponent.getGraphics();
-            AffineTransform currentTransform = contentGraphics.getTransform();
-            AffineTransform newTransform = new AffineTransform(currentTransform);
+            var options = CopyImageOptionsProvider.getInstance(project).getState();
+            var scale = options.myScale;
+            var contentComponent = editor.getContentComponent();
+            var contentGraphics = (Graphics2D) contentComponent.getGraphics();
+            var currentTransform = contentGraphics.getTransform();
+            var newTransform = new AffineTransform(currentTransform);
             newTransform.scale(scale, scale);
-            TransferableImage.Format format = options.myFormat;
+            var format = options.myFormat;
             if (format == null) format = TransferableImage.Format.PNG;
             // To flush glyph cache
             format.paint(contentComponent, newTransform, 1, 1, JBColor.BLACK, 0);
-            String text = document.getText(range);
-            Rectangle2D r = getSelectionRectangle(range, text, options);
+            var text = document.getText(range);
+            var r = getSelectionRectangle(range, text, options);
 
             newTransform.translate(-r.getX(), -r.getY());
 
             return format.paint(contentComponent, newTransform,
-                (int) (r.getWidth() * scale), (int) (r.getHeight() * scale),
-                getBackgroundColor(editor, false), options.myPadding);
+                    (int) (r.getWidth() * scale), (int) (r.getHeight() * scale),
+                    getBackgroundColor(editor, false), options.myPadding);
         } catch (IOException e) {
             Logger.getInstance(ImageBuilder.class).error(e);
             return null;
@@ -75,12 +68,12 @@ class ImageBuilder {
     }
 
     private void resetEditor() {
-        Document document = editor.getDocument();
-        TextRange range = getRange(editor);
+        var document = editor.getDocument();
+        var range = getRange(editor);
         editor.getSelectionModel().setSelection(0, 0);
         if (CopyImageOptionsProvider.getInstance(project).getState().myRemoveCaret) {
             editor.getCaretModel().moveToOffset(range.getStartOffset() == 0 ?
-                document.getLineEndOffset(document.getLineCount() - 1) : 0);
+                    document.getLineEndOffset(document.getLineCount() - 1) : 0);
             if (editor instanceof EditorEx) {
                 ((EditorEx) editor).setCaretEnabled(false);
             }
@@ -89,50 +82,61 @@ class ImageBuilder {
     }
 
     long getSelectedSize() {
-        CopyImageOptionsProvider.State options = CopyImageOptionsProvider.getInstance(project).getState();
-        Rectangle2D rectangle = getSelectionRectangle();
-        double sizeX = rectangle.getWidth() + options.myPadding * 2;
-        double sizeY = rectangle.getHeight() + options.myPadding * 2;
-        return (long)(sizeX * sizeY * options.myScale * options.myScale);
+        var options = CopyImageOptionsProvider.getInstance(project).getState();
+        var rectangle = getSelectionRectangle();
+        var sizeX = rectangle.getWidth() + options.myPadding * 2;
+        var sizeY = rectangle.getHeight() + options.myPadding * 2;
+        return (long) (sizeX * sizeY * options.myScale * options.myScale);
     }
 
-    @NotNull
     private Rectangle2D getSelectionRectangle() {
-        CopyImageOptionsProvider.State options = CopyImageOptionsProvider.getInstance(project).getState();
-        TextRange range = getRange(editor);
-        Document document = editor.getDocument();
-        String text = document.getText(range);
+        var options = CopyImageOptionsProvider.getInstance(project).getState();
+        var range = getRange(editor);
+        var document = editor.getDocument();
+        var text = document.getText(range);
         return getSelectionRectangle(range, text, options);
     }
 
     private static TextRange getRange(Editor editor) {
-        SelectionModel selectionModel = editor.getSelectionModel();
-        int start = selectionModel.getSelectionStart();
-        int end = selectionModel.getSelectionEnd();
+        var selectionModel = editor.getSelectionModel();
+        var start = selectionModel.getSelectionStart();
+        var end = selectionModel.getSelectionEnd();
         return new TextRange(start, end);
     }
 
-    @NotNull
-    private Rectangle2D getSelectionRectangle(TextRange range, String text, CopyImageOptionsProvider.State options) {
-        int start = range.getStartOffset();
-        int end = range.getEndOffset();
-        Rectangle2D r = new Rectangle2D.Double();
+    private Rectangle2D getSelectionRectangle(
+            TextRange range,
+            String text,
+            CopyImageOptionsProvider.State options
+    ) {
+        var start = range.getStartOffset();
+        var end = range.getEndOffset();
+        var r = new Rectangle2D.Double();
 
         for (int i = start; i <= end; i++) {
             if (options.myChopIndentation &&
-                EMPTY_SUFFIX.matcher(text.substring(0, Math.min(i - start + 1, text.length()))).find()) {
+                    EMPTY_SUFFIX.matcher(text.substring(0, Math.min(i - start + 1, text.length()))).find()) {
                 continue;
             }
-            VisualPosition pos = editor.offsetToVisualPosition(i);
-            Point2D point = editor.visualPositionToXY(pos);
+            var pos = editor.offsetToVisualPosition(i);
+            var point = editor.visualPositionToXY(pos);
             includePoint(r, point);
             includePoint(r, new Point2D.Double(point.getX(), point.getY() + editor.getLineHeight()));
         }
-        for (Inlay<?> inlay : editor.getInlayModel().getInlineElementsInRange(start, end)) {
-            Rectangle bounds = inlay.getBounds();
+
+        for (var inlay : editor.getInlayModel().getInlineElementsInRange(start, end)) {
+            var bounds = inlay.getBounds();
             if (bounds != null) {
                 r.add(bounds);
             }
+        }
+
+        if (!r.isEmpty()) {
+            var lineHeight = editor.getLineHeight();
+            var charWidth = editor.visualPositionToXY(new VisualPosition(0, 1)).getX() -
+                    editor.visualPositionToXY(new VisualPosition(0, 0)).getX();
+            r.setRect(r.getX() - 3 * charWidth, r.getY() - lineHeight,
+                    r.getWidth() + 6 * charWidth, r.getHeight() + 2 * lineHeight);
         }
         return r;
     }
@@ -146,6 +150,7 @@ class ImageBuilder {
     }
 
     public static class EditorState {
+
         private final TextRange range;
         private final int offset;
         private final boolean caretRow;
@@ -156,7 +161,6 @@ class ImageBuilder {
             this.caretRow = caretRow;
         }
 
-        @NotNull
         static EditorState from(Editor editor) {
             TextRange range = getRange(editor);
             int offset = editor.getCaretModel().getOffset();
@@ -166,10 +170,10 @@ class ImageBuilder {
 
         void restore(Editor editor) {
             editor.getSettings().setCaretRowShown(caretRow);
-            SelectionModel selectionModel = editor.getSelectionModel();
-            CaretModel caretModel = editor.getCaretModel();
-            CopyImageOptionsProvider provider =
-              CopyImageOptionsProvider.getInstance(Objects.requireNonNull(editor.getProject()));
+            var selectionModel = editor.getSelectionModel();
+            var caretModel = editor.getCaretModel();
+            var provider =
+                    CopyImageOptionsProvider.getInstance(Objects.requireNonNull(editor.getProject()));
             if (provider.getState().myRemoveCaret) {
                 if (editor instanceof EditorEx) {
                     ((EditorEx) editor).setCaretEnabled(true);
