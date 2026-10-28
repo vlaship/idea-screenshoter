@@ -122,7 +122,7 @@ public class CopyImageConfigurable implements SearchableConfigurable, Configurab
         }
 
         private void createUIComponents() {
-            var singleFolderDescriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
+            var singleFolderDescriptor = FileChooserDescriptorFactory.singleDir();
             var field = new TextFieldWithBrowseButton();
             field.addBrowseFolderListener(myProject, singleFolderDescriptor);
             mySaveDirectoryPanel = field;

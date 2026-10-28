@@ -1,10 +1,10 @@
 plugins {
     id("java")
-    id("org.jetbrains.intellij.platform") version "2.16.0"
+    id("org.jetbrains.intellij.platform") version "2.19.0"
 }
 
 group = "one.util.ideaplugin"
-version = "2.0.0"
+version = "2.0.1"
 
 repositories {
     mavenCentral()
@@ -16,7 +16,7 @@ repositories {
 dependencies {
     compileOnly("org.jspecify:jspecify:1.0.0")
     intellijPlatform {
-        intellijIdea("2025.1.1")
+        intellijIdea("2026.2.2")
     }
 }
 
@@ -25,6 +25,12 @@ intellijPlatform {
         ideaVersion {
             sinceBuild = "251"
             untilBuild = provider { null }
+        }
+    }
+
+    pluginVerification {
+        ides {
+            recommended()
         }
     }
 
@@ -39,12 +45,14 @@ intellijPlatform {
     }
 }
 
+// Keep bytecode at Java 21 so the plugin still runs on 2025.1 (JBR 21),
+// while compiling against 2026.x platform classes, which are Java 25 bytecode.
 tasks.withType<JavaCompile> {
     options.release = 21
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }

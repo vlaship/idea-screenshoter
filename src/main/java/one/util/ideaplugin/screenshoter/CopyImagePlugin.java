@@ -4,7 +4,7 @@ import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationGroupManager;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 
@@ -15,7 +15,7 @@ class CopyImagePlugin {
     @Nullable
     static Editor getEditor(AnActionEvent event) {
         var dataContext = event.getDataContext();
-        return PlatformDataKeys.EDITOR.getData(dataContext);
+        return CommonDataKeys.EDITOR.getData(dataContext);
     }
 
     static NotificationGroup getNotificationGroup() {
