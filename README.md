@@ -1,15 +1,20 @@
-[![IntelliJ IDEA Plugin](https://img.shields.io/jetbrains/plugin/v/9406-code-screenshots?label=plugin&logo=intellij-idea)](https://plugins.jetbrains.com/plugin/9406-code-screenshots/)
-[![IntelliJ IDEA Plugin](https://img.shields.io/jetbrains/plugin/d/9406-code-screenshots?logo=intellij-idea)](https://plugins.jetbrains.com/plugin/9406-code-screenshots/)
-
-The plugin is archived and not supported anymore.
+[![Release](https://img.shields.io/github/v/release/vlaship/idea-screenshoter?label=plugin&logo=intellij-idea)](https://github.com/vlaship/idea-screenshoter/releases/latest)
+[![Release workflow](https://github.com/vlaship/idea-screenshoter/actions/workflows/release.yml/badge.svg)](https://github.com/vlaship/idea-screenshoter/actions/workflows/release.yml)
 
 IDEA Code Screenshoter
 ===
 
 Simple IDEA plugin which allows you to take code screenshots. Just select code block and press `Ctrl+Alt+Shift+A` (`Option+Shift+Command+A`
-on macOS). Alternatively you may save screenshots as PNG files using **Save image as** action (no hot-key by default, but can be assigned via **Keymap**).
+on macOS). Alternatively you may save screenshots as PNG or SVG files using **Save as Image** action (no hot-key by default, but can be assigned via **Keymap**).
+Both actions are also available in the editor context menu when text is selected.
 
-Installation page is [here](https://plugins.jetbrains.com/idea/plugin/9406-code-screenshots).
+Supports IntelliJ IDEA 2025.1 and later.
+
+This is a maintained fork of [amaembo/screenshoter](https://github.com/amaembo/screenshoter) by Tagir Valeev.
+
+### Installation
+1. Download `screenshoter-<version>.zip` from the [latest release](https://github.com/vlaship/idea-screenshoter/releases/latest).
+2. In IDEA open **Settings | Plugins**, click ⚙️ and choose **Install Plugin from Disk...**, then select the downloaded zip.
 
 ### Example
 <h3 align=center><img src="screenshots/code_screenshot_1.png" width=600></h3>
