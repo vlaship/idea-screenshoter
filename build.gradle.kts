@@ -16,7 +16,7 @@ repositories {
 dependencies {
     compileOnly("org.jspecify:jspecify:1.0.0")
     intellijPlatform {
-        intellijIdea("2026.2.2")
+        intellijIdea("2026.2.3")
     }
 }
 
