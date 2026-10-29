@@ -1,10 +1,12 @@
 plugins {
     id("java")
     id("org.jetbrains.intellij.platform") version "2.19.0"
+    id("maven-publish")
 }
 
 group = "one.util.ideaplugin"
-version = "2.0.1"
+// CI passes -PpluginVersion=<tag without "v"> when building a release
+version = providers.gradleProperty("pluginVersion").getOrElse("2.0.1")
 
 repositories {
     mavenCentral()
@@ -54,5 +56,24 @@ tasks.withType<JavaCompile> {
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("plugin") {
+            artifactId = "screenshoter"
+            artifact(tasks.buildPlugin)
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/vlaship/idea-screenshoter")
+            credentials {
+                username = providers.environmentVariable("GITHUB_ACTOR").orNull
+                password = providers.environmentVariable("GITHUB_TOKEN").orNull
+            }
+        }
     }
 }
