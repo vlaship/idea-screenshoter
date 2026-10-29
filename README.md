@@ -1,4 +1,5 @@
-[![Release](https://img.shields.io/github/v/release/vlaship/idea-screenshoter?label=plugin&logo=intellij-idea)](https://github.com/vlaship/idea-screenshoter/releases/latest)
+[![Release](https://img.shields.io/github/v/release/vlaship/idea-screenshoter?label=plugin&logo=intellij-idea&sort=semver)](https://github.com/vlaship/idea-screenshoter/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/vlaship/idea-screenshoter/total?logo=intellij-idea)](https://github.com/vlaship/idea-screenshoter/releases)
 [![Release workflow](https://github.com/vlaship/idea-screenshoter/actions/workflows/release.yml/badge.svg)](https://github.com/vlaship/idea-screenshoter/actions/workflows/release.yml)
 
 IDEA Code Screenshoter
