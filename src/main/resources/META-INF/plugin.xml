@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>one.util.ideaplugin.screenshoter</id>
   <name>Code Screenshots</name>
-  <vendor email="tagir.valeev@jetbrains.com" url="https://github.com/amaembo/screenshoter/">Tagir Valeev</vendor>
+  <vendor email="tagir.valeev@jetbrains.com" url="https://github.com/amaembo/screenshoter/">Tagir Valeev, vlaship</vendor>
 
   <description><![CDATA[
       <p>Select a code and press a hot-key (Ctrl+Alt+Shift+A by default)
