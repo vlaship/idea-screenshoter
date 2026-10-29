@@ -1,11 +1,13 @@
 package one.util.ideaplugin.screenshoter;
 
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.fileChooser.FileChooser;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import org.jspecify.annotations.Nullable;
 
 import javax.swing.JCheckBox;
@@ -122,9 +124,16 @@ public class CopyImageConfigurable implements SearchableConfigurable, Configurab
         }
 
         private void createUIComponents() {
-            var singleFolderDescriptor = FileChooserDescriptorFactory.singleDir();
             var field = new TextFieldWithBrowseButton();
-            field.addBrowseFolderListener(myProject, singleFolderDescriptor);
+            field.addActionListener(e -> {
+                var descriptor = new FileChooserDescriptor(false, true, false, false, false, false);
+                var current = field.getText().trim();
+                var initialDir = current.isEmpty() ? null : LocalFileSystem.getInstance().findFileByPath(current);
+                var chosen = FileChooser.chooseFile(descriptor, myProject, initialDir);
+                if (chosen != null) {
+                    field.setText(chosen.getPath());
+                }
+            });
             mySaveDirectoryPanel = field;
             mySaveDirectory = field;
         }
